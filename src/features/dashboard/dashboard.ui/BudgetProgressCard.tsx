@@ -1,5 +1,5 @@
 import { Card } from '../../../shared/components';
-import { formatCurrency, formatDate } from '../../../shared/utils/formatters';
+import { formatCurrency } from '../../../shared/utils/formatters';
 import {
   calculateBudgetProgress,
   formatBudgetPeriod,

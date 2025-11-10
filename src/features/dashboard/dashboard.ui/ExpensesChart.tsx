@@ -51,10 +51,12 @@ function ExpensesChart({ budgets, loading = false }: ExpensesChartProps) {
           color: '#e5e7eb',
         },
         formatter: function () {
-          const percentage = this.percentage || 0;
+          const point = this.point || (this as any).points?.[0];
+          if (!point) return '';
+          const percentage = point.percentage || 0;
           return `
-            <b>${this.point.name}</b><br/>
-            Monto: <b>${formatCurrency(this.y as number)}</b><br/>
+            <b>${point.name}</b><br/>
+            Monto: <b>${formatCurrency(point.y as number)}</b><br/>
             Porcentaje: <b>${percentage.toFixed(1)}%</b>
           `;
         },

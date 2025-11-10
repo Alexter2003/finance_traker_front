@@ -20,6 +20,7 @@ import { apiClient } from '../../../core/api';
 import { API_ENDPOINTS } from '../../../core/constants/api.constants';
 import type { ExpenseType } from '../../../shared/types/common.types';
 import { ExpenseCategoryType } from '../../../shared/types/common.types';
+import type { Resolver } from 'react-hook-form';
 
 interface BudgetFormProps {
   budget?: Budget | null;
@@ -28,7 +29,15 @@ interface BudgetFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateBudgetDto | UpdateBudgetDto;
+type BudgetFormData = {
+  expenseTypeId?: number;
+  monthlyAmount?: number;
+  biweeklyAmount?: number;
+  pendingAmount?: number;
+  startDate?: string;
+  endDate?: string;
+  isActive?: boolean;
+};
 
 function BudgetForm({
   budget,
@@ -68,8 +77,8 @@ function BudgetForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<BudgetFormData>({
+    resolver: yupResolver(schema) as Resolver<BudgetFormData>,
     defaultValues: budget
       ? {
         monthlyAmount: budget.monthlyAmount,
@@ -93,7 +102,7 @@ function BudgetForm({
   const {
     field: isActiveField,
   } = useController({
-    name: 'isActive' as any,
+    name: 'isActive',
     control,
     defaultValue: budget?.isActive ?? true,
   });
@@ -108,7 +117,7 @@ function BudgetForm({
     }
   }, [monthlyAmount, biweeklyAmount, isEditMode]);
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: BudgetFormData) => {
     if (isEditMode) {
       // Modo edición: UpdateBudgetDto
       const submitData: UpdateBudgetDto = {};
@@ -143,7 +152,7 @@ function BudgetForm({
       }
 
       // Incluir isActive solo si está definido
-      if (isActiveField.value !== undefined) {
+      if (isActiveField.value !== undefined && typeof isActiveField.value === 'boolean') {
         submitData.isActive = isActiveField.value;
       }
 
@@ -193,7 +202,7 @@ function BudgetForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {!isEditMode && (
-        <FormSelect<FormData>
+        <FormSelect<BudgetFormData>
           name="expenseTypeId"
           control={control}
           label="Tipo de Gasto"
@@ -211,7 +220,7 @@ function BudgetForm({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormInput<FormData>
+        <FormInput<BudgetFormData>
           name="monthlyAmount"
           control={control}
           label="Monto Mensual"
@@ -223,7 +232,7 @@ function BudgetForm({
           description="Monto total del presupuesto mensual"
         />
 
-        <FormInput<FormData>
+        <FormInput<BudgetFormData>
           name="biweeklyAmount"
           control={control}
           label="Monto Quincenal"
@@ -240,7 +249,7 @@ function BudgetForm({
       </div>
 
       {isEditMode && (
-        <FormInput<FormData>
+        <FormInput<BudgetFormData>
           name="pendingAmount"
           control={control}
           label="Saldo Pendiente"
@@ -253,7 +262,7 @@ function BudgetForm({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormDatePicker<FormData>
+        <FormDatePicker<BudgetFormData>
           name="startDate"
           control={control}
           label="Fecha de Inicio"
@@ -261,7 +270,7 @@ function BudgetForm({
           errorMessage={errors.startDate?.message}
         />
 
-        <FormDatePicker<FormData>
+        <FormDatePicker<BudgetFormData>
           name="endDate"
           control={control}
           label="Fecha de Fin"
@@ -275,7 +284,7 @@ function BudgetForm({
           <input
             type="checkbox"
             id="isActive"
-            checked={isActiveField.value ?? false}
+            checked={typeof isActiveField.value === 'boolean' ? isActiveField.value : false}
             onChange={(e) => isActiveField.onChange(e.target.checked)}
             onBlur={isActiveField.onBlur}
             className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"

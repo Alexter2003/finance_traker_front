@@ -8,6 +8,7 @@ import {
 } from '../accounts.domain/accounts.schema';
 import type { CreateAccountDto, UpdateAccountDto } from '../accounts.domain/accounts.types';
 import type { Account } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface AccountFormProps {
   account?: Account | null;
@@ -16,7 +17,7 @@ interface AccountFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateAccountDto | UpdateAccountDto;
+type FormData = yup.InferType<typeof createAccountSchema> | yup.InferType<typeof updateAccountSchema>;
 
 function AccountForm({ account, onSubmit, onCancel, isLoading = false }: AccountFormProps) {
   const isEditMode = !!account;

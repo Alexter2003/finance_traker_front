@@ -1,4 +1,7 @@
-import type { Account, AccountType } from '../../../shared/types/common.types';
+import type { AccountType } from '../../../shared/types/common.types';
+import type { Account } from '../../../shared/types/common.types';
+
+export type { Account };
 
 /**
  * Respuesta del endpoint GET /api/accounts (con paginación)

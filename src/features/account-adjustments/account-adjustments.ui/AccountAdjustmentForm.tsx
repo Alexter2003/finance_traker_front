@@ -19,6 +19,7 @@ import type {
 import type { AccountAdjustment } from '../account-adjustments.domain/account-adjustments.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import type { Account } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface AccountAdjustmentFormProps {
   adjustment?: AccountAdjustment | null;
@@ -29,7 +30,7 @@ interface AccountAdjustmentFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateAccountAdjustmentDto | UpdateAccountAdjustmentDto;
+type FormData = yup.InferType<typeof createAccountAdjustmentSchema> | yup.InferType<typeof updateAccountAdjustmentSchema>;
 
 function AccountAdjustmentForm({
   adjustment,

@@ -1,4 +1,7 @@
-import type { ExpenseType, ExpenseCategoryType } from '../../../shared/types/common.types';
+import type { ExpenseCategoryType } from '../../../shared/types/common.types';
+import type { ExpenseType } from '../../../shared/types/common.types';
+
+export type { ExpenseType };
 
 /**
  * Respuesta del endpoint GET /api/expense-types (con paginación)

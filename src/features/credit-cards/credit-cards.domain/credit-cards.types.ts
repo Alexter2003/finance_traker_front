@@ -1,5 +1,7 @@
 import type { CreditCard } from '../../../shared/types/common.types';
 
+export type { CreditCard };
+
 /**
  * Respuesta del endpoint GET /api/credit-cards (con paginación)
  */

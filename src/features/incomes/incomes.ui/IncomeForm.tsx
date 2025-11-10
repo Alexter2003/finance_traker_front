@@ -20,6 +20,7 @@ import type { IncomeWithRelations } from '../incomes.domain/incomes.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import { getIncomeFrequencyOptions } from '../incomes.domain/incomes.utils';
 import type { Account } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface IncomeFormProps {
   income?: IncomeWithRelations | null;
@@ -28,7 +29,7 @@ interface IncomeFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateIncomeDto | UpdateIncomeDto;
+type FormData = yup.InferType<typeof createIncomeSchema> | yup.InferType<typeof updateIncomeSchema>;
 
 function IncomeForm({
   income,

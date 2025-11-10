@@ -8,6 +8,7 @@ interface FormInputProps<T extends FieldValues> {
     label?: string;
     placeholder?: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+    step?: string;
     isRequired?: boolean;
     isDisabled?: boolean;
     errorMessage?: string;
@@ -21,6 +22,7 @@ function FormInput<T extends FieldValues>({
     label,
     placeholder,
     type = 'text',
+    step,
     isRequired = false,
     isDisabled = false,
     errorMessage,
@@ -41,6 +43,7 @@ function FormInput<T extends FieldValues>({
             label={label}
             placeholder={placeholder}
             type={type}
+            step={step}
             isRequired={isRequired}
             isDisabled={isDisabled}
             isInvalid={!!error || !!errorMessage}

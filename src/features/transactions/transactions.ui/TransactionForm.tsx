@@ -19,6 +19,7 @@ import type {
 import type { TransactionWithRelations } from '../transactions.domain/transactions.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import type { Account } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface TransactionFormProps {
   transaction?: TransactionWithRelations | null;
@@ -27,7 +28,7 @@ interface TransactionFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateTransactionDto | UpdateTransactionDto;
+type FormData = yup.InferType<typeof createTransactionSchema> | yup.InferType<typeof updateTransactionSchema>;
 
 function TransactionForm({
   transaction,

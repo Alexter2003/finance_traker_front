@@ -16,6 +16,7 @@ import type {
   UpdateExpenseTypeDto,
 } from '../expense-types.domain/expense-types.types';
 import type { ExpenseType } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface ExpenseTypeFormProps {
   expenseType?: ExpenseType | null;
@@ -24,7 +25,7 @@ interface ExpenseTypeFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateExpenseTypeDto | UpdateExpenseTypeDto;
+type FormData = yup.InferType<typeof createExpenseTypeSchema> | yup.InferType<typeof updateExpenseTypeSchema>;
 
 function ExpenseTypeForm({
   expenseType,

@@ -21,6 +21,7 @@ import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import { expenseTypesService } from '../../expense-types/expense-types.data/expense-types.service';
 import type { Account } from '../../../shared/types/common.types';
 import type { ExpenseType } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface ExpenseFormProps {
   expense?: ExpenseWithRelations | null;
@@ -29,7 +30,7 @@ interface ExpenseFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateExpenseDto | UpdateExpenseDto;
+type FormData = yup.InferType<typeof createExpenseSchema> | yup.InferType<typeof updateExpenseSchema>;
 
 function ExpenseForm({
   expense,

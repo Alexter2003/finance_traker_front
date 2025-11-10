@@ -1,4 +1,3 @@
-import type { BudgetSummary } from './dashboard.types';
 import { formatDate } from '../../../shared/utils/formatters';
 
 /**

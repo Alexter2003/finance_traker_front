@@ -6,7 +6,6 @@ import type {
     BudgetsResponse,
     CreateBudgetDto,
     UpdateBudgetDto,
-    QueryBudgetDto,
 } from '../budgets.domain/budgets.types';
 import { BudgetCard, BudgetForm } from '../budgets.ui';
 import {

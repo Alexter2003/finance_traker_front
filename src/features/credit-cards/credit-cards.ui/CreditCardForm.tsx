@@ -7,6 +7,7 @@ import {
 } from '../credit-cards.domain/credit-cards.schema';
 import type { CreateCreditCardDto, UpdateCreditCardDto } from '../credit-cards.domain/credit-cards.types';
 import type { CreditCard } from '../../../shared/types/common.types';
+import * as yup from 'yup';
 
 interface CreditCardFormProps {
   creditCard?: CreditCard | null;
@@ -15,7 +16,7 @@ interface CreditCardFormProps {
   isLoading?: boolean;
 }
 
-type FormData = CreateCreditCardDto | UpdateCreditCardDto;
+type FormData = yup.InferType<typeof createCreditCardSchema> | yup.InferType<typeof updateCreditCardSchema>;
 
 function CreditCardForm({ creditCard, onSubmit, onCancel, isLoading = false }: CreditCardFormProps) {
   const isEditMode = !!creditCard;
