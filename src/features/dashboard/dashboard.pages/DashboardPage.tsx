@@ -86,31 +86,31 @@ function DashboardPage() {
 
           {/* Resumen de Cuentas */}
           <AccountsSummaryCard
-            accounts={dashboardData.accounts}
+            accounts={dashboardData.accounts || []}
             loading={loading}
           />
 
           {/* Presupuestos Activos */}
           <BudgetProgressCard
-            budgets={dashboardData.activeBudgets}
+            budgets={dashboardData.activeBudgets || []}
             loading={loading}
           />
 
           {/* Gráfico de Gastos por Categoría - Ocupa toda la fila si hay presupuestos */}
-          {dashboardData.activeBudgets.length > 0 && (
+          {dashboardData.activeBudgets?.length > 0 && (
             <div className="lg:col-span-2">
               <ExpensesChart
-                budgets={dashboardData.activeBudgets}
+                budgets={dashboardData.activeBudgets || []}
                 loading={loading}
               />
             </div>
           )}
 
           {/* Tarjetas de Crédito - Ocupa toda la fila si hay tarjetas */}
-          {dashboardData.creditCards.length > 0 && (
+          {dashboardData.creditCards?.length > 0 && (
             <div className="lg:col-span-2">
               <CreditCardsSummaryCard
-                creditCards={dashboardData.creditCards}
+                creditCards={dashboardData.creditCards || []}
                 loading={loading}
               />
             </div>

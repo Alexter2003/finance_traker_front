@@ -21,7 +21,7 @@ import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import { expenseTypesService } from '../../expense-types/expense-types.data/expense-types.service';
 import type { Account } from '../../../shared/types/common.types';
 import type { ExpenseType } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Resolver } from 'react-hook-form';
 
 interface ExpenseFormProps {
   expense?: ExpenseWithRelations | null;
@@ -30,7 +30,13 @@ interface ExpenseFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createExpenseSchema> | yup.InferType<typeof updateExpenseSchema>;
+type ExpenseFormData = {
+  amount?: number;
+  accountId?: number;
+  expenseTypeId?: number;
+  description?: string;
+  date?: string;
+};
 
 function ExpenseForm({
   expense,
@@ -50,8 +56,8 @@ function ExpenseForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ExpenseFormData>({
+    resolver: yupResolver(schema) as Resolver<ExpenseFormData>,
     defaultValues: expense
       ? {
           amount: expense.amount,
@@ -99,7 +105,7 @@ function ExpenseForm({
     fetchExpenseTypes();
   }, []);
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: ExpenseFormData) => {
     const submitData: CreateExpenseDto | UpdateExpenseDto = {
       ...data,
       accountId:
@@ -136,7 +142,7 @@ function ExpenseForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormInput<FormData>
+      <FormInput<ExpenseFormData>
         name="amount"
         control={control}
         label="Monto"
@@ -149,7 +155,7 @@ function ExpenseForm({
         description="Monto del gasto en quetzales"
       />
 
-      <FormSelect<FormData>
+      <FormSelect<ExpenseFormData>
         name="accountId"
         control={control}
         label="Cuenta"
@@ -163,7 +169,7 @@ function ExpenseForm({
         description="Cuenta desde la cual se realizará el gasto"
       />
 
-      <FormSelect<FormData>
+      <FormSelect<ExpenseFormData>
         name="expenseTypeId"
         control={control}
         label="Tipo de gasto"
@@ -179,7 +185,7 @@ function ExpenseForm({
         description="Categoría del gasto"
       />
 
-      <FormTextarea<FormData>
+      <FormTextarea<ExpenseFormData>
         name="description"
         control={control}
         label="Descripción"
@@ -188,7 +194,7 @@ function ExpenseForm({
         errorMessage={errors.description?.message}
       />
 
-      <FormDatePicker<FormData>
+      <FormDatePicker<ExpenseFormData>
         name="date"
         control={control}
         label="Fecha del gasto"

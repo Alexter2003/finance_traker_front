@@ -7,7 +7,7 @@ import {
 } from '../credit-cards.domain/credit-cards.schema';
 import type { CreateCreditCardDto, UpdateCreditCardDto } from '../credit-cards.domain/credit-cards.types';
 import type { CreditCard } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Resolver } from 'react-hook-form';
 
 interface CreditCardFormProps {
   creditCard?: CreditCard | null;
@@ -16,7 +16,10 @@ interface CreditCardFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createCreditCardSchema> | yup.InferType<typeof updateCreditCardSchema>;
+type CreditCardFormData = {
+  name?: string;
+  initialBalance?: number;
+};
 
 function CreditCardForm({ creditCard, onSubmit, onCancel, isLoading = false }: CreditCardFormProps) {
   const isEditMode = !!creditCard;
@@ -26,8 +29,8 @@ function CreditCardForm({ creditCard, onSubmit, onCancel, isLoading = false }: C
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<CreditCardFormData>({
+    resolver: yupResolver(schema) as Resolver<CreditCardFormData>,
     defaultValues: creditCard
       ? {
           name: creditCard.name,
@@ -40,23 +43,23 @@ function CreditCardForm({ creditCard, onSubmit, onCancel, isLoading = false }: C
     mode: 'onChange',
   });
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: CreditCardFormData) => {
     // Convertir initialBalance a número si existe
     const submitData: CreateCreditCardDto | UpdateCreditCardDto = {
-      ...data,
-      initialBalance:
-        data.initialBalance !== undefined
-          ? typeof data.initialBalance === 'string'
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.initialBalance !== undefined && {
+        initialBalance:
+          typeof data.initialBalance === 'string'
             ? Number(data.initialBalance)
-            : data.initialBalance
-          : undefined,
+            : data.initialBalance,
+      }),
     };
     await onSubmit(submitData);
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormInput<FormData>
+      <FormInput<CreditCardFormData>
         name="name"
         control={control}
         label="Nombre de la tarjeta"
@@ -65,7 +68,7 @@ function CreditCardForm({ creditCard, onSubmit, onCancel, isLoading = false }: C
         errorMessage={errors.name?.message}
       />
 
-      <FormInput<FormData>
+      <FormInput<CreditCardFormData>
         name="initialBalance"
         control={control}
         label="Balance inicial"

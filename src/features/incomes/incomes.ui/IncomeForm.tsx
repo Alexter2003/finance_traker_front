@@ -20,7 +20,7 @@ import type { IncomeWithRelations } from '../incomes.domain/incomes.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import { getIncomeFrequencyOptions } from '../incomes.domain/incomes.utils';
 import type { Account } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Resolver } from 'react-hook-form';
 
 interface IncomeFormProps {
   income?: IncomeWithRelations | null;
@@ -29,7 +29,13 @@ interface IncomeFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createIncomeSchema> | yup.InferType<typeof updateIncomeSchema>;
+type IncomeFormData = {
+  amount?: number;
+  accountId?: number;
+  frequency?: string;
+  description?: string;
+  date?: string;
+};
 
 function IncomeForm({
   income,
@@ -47,8 +53,8 @@ function IncomeForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<IncomeFormData>({
+    resolver: yupResolver(schema) as Resolver<IncomeFormData>,
     defaultValues: income
       ? {
           amount: income.amount,
@@ -83,7 +89,7 @@ function IncomeForm({
     fetchAccounts();
   }, []);
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: IncomeFormData) => {
     const submitData: CreateIncomeDto | UpdateIncomeDto = {
       ...data,
       accountId:
@@ -111,7 +117,7 @@ function IncomeForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormInput<FormData>
+      <FormInput<IncomeFormData>
         name="amount"
         control={control}
         label="Monto"
@@ -124,7 +130,7 @@ function IncomeForm({
         description="Monto del ingreso en quetzales"
       />
 
-      <FormSelect<FormData>
+      <FormSelect<IncomeFormData>
         name="accountId"
         control={control}
         label="Cuenta"
@@ -138,7 +144,7 @@ function IncomeForm({
         description="Cuenta a la cual se registrará el ingreso"
       />
 
-      <FormSelect<FormData>
+      <FormSelect<IncomeFormData>
         name="frequency"
         control={control}
         label="Frecuencia"
@@ -150,7 +156,7 @@ function IncomeForm({
         description="Frecuencia del ingreso"
       />
 
-      <FormTextarea<FormData>
+      <FormTextarea<IncomeFormData>
         name="description"
         control={control}
         label="Descripción"
@@ -159,7 +165,7 @@ function IncomeForm({
         errorMessage={errors.description?.message}
       />
 
-      <FormDatePicker<FormData>
+      <FormDatePicker<IncomeFormData>
         name="date"
         control={control}
         label="Fecha del ingreso"

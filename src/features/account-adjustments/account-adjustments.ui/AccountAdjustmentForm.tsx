@@ -19,7 +19,7 @@ import type {
 import type { AccountAdjustment } from '../account-adjustments.domain/account-adjustments.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import type { Account } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Resolver } from 'react-hook-form';
 
 interface AccountAdjustmentFormProps {
   adjustment?: AccountAdjustment | null;
@@ -30,7 +30,12 @@ interface AccountAdjustmentFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createAccountAdjustmentSchema> | yup.InferType<typeof updateAccountAdjustmentSchema>;
+type AccountAdjustmentFormData = {
+  accountId?: number;
+  amount?: number;
+  reason?: string;
+  date?: string;
+};
 
 function AccountAdjustmentForm({
   adjustment,
@@ -50,8 +55,8 @@ function AccountAdjustmentForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<AccountAdjustmentFormData>({
+    resolver: yupResolver(schema) as Resolver<AccountAdjustmentFormData>,
     defaultValues: adjustment
       ? {
           accountId: adjustment.accountId,
@@ -84,7 +89,7 @@ function AccountAdjustmentForm({
     fetchAccounts();
   }, []);
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: AccountAdjustmentFormData) => {
     const submitData: CreateAccountAdjustmentDto | UpdateAccountAdjustmentDto =
       {
         ...data,
@@ -111,7 +116,7 @@ function AccountAdjustmentForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormSelect<FormData>
+      <FormSelect<AccountAdjustmentFormData>
         name="accountId"
         control={control}
         label="Cuenta"
@@ -125,7 +130,7 @@ function AccountAdjustmentForm({
         description="Selecciona la cuenta a la que se aplicará el ajuste"
       />
 
-      <FormInput<FormData>
+      <FormInput<AccountAdjustmentFormData>
         name="amount"
         control={control}
         label="Monto"
@@ -138,7 +143,7 @@ function AccountAdjustmentForm({
         description="Monto del ajuste (positivo para aumentar, negativo para disminuir)"
       />
 
-      <FormTextarea<FormData>
+      <FormTextarea<AccountAdjustmentFormData>
         name="reason"
         control={control}
         label="Razón del ajuste"
@@ -151,7 +156,7 @@ function AccountAdjustmentForm({
         maxRows={6}
       />
 
-      <FormDatePicker<FormData>
+      <FormDatePicker<AccountAdjustmentFormData>
         name="date"
         control={control}
         label="Fecha del ajuste"

@@ -15,8 +15,8 @@ import type {
   CreateExpenseTypeDto,
   UpdateExpenseTypeDto,
 } from '../expense-types.domain/expense-types.types';
-import type { ExpenseType } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { ExpenseType, ExpenseCategoryType } from '../../../shared/types/common.types';
+import type { Resolver } from 'react-hook-form';
 
 interface ExpenseTypeFormProps {
   expenseType?: ExpenseType | null;
@@ -25,7 +25,11 @@ interface ExpenseTypeFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createExpenseTypeSchema> | yup.InferType<typeof updateExpenseTypeSchema>;
+type ExpenseTypeFormData = {
+  name?: string;
+  type?: ExpenseCategoryType | string;
+  description?: string;
+};
 
 function ExpenseTypeForm({
   expenseType,
@@ -40,8 +44,8 @@ function ExpenseTypeForm({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<ExpenseTypeFormData>({
+    resolver: yupResolver(schema) as Resolver<ExpenseTypeFormData>,
     defaultValues: expenseType
       ? {
           name: expenseType.name,
@@ -56,13 +60,18 @@ function ExpenseTypeForm({
     mode: 'onChange',
   });
 
-  const handleFormSubmit = async (data: FormData) => {
-    await onSubmit(data);
+  const handleFormSubmit = async (data: ExpenseTypeFormData) => {
+    const submitData: CreateExpenseTypeDto | UpdateExpenseTypeDto = {
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.type !== undefined && { type: data.type as ExpenseCategoryType }),
+      ...(data.description !== undefined && { description: data.description }),
+    };
+    await onSubmit(submitData);
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormInput<FormData>
+      <FormInput<ExpenseTypeFormData>
         name="name"
         control={control}
         label="Nombre del tipo de gasto"
@@ -71,7 +80,7 @@ function ExpenseTypeForm({
         errorMessage={errors.name?.message}
       />
 
-      <FormSelect<FormData>
+      <FormSelect<ExpenseTypeFormData>
         name="type"
         control={control}
         label="Tipo de categoría"
@@ -82,7 +91,7 @@ function ExpenseTypeForm({
         description="Fijo: Gastos recurrentes con presupuesto. Variable: Gastos ocasionales sin presupuesto fijo."
       />
 
-      <FormTextarea<FormData>
+      <FormTextarea<ExpenseTypeFormData>
         name="description"
         control={control}
         label="Descripción"

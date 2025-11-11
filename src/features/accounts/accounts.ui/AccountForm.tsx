@@ -7,8 +7,8 @@ import {
   updateAccountSchema,
 } from '../accounts.domain/accounts.schema';
 import type { CreateAccountDto, UpdateAccountDto } from '../accounts.domain/accounts.types';
-import type { Account } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Account, AccountType } from '../../../shared/types/common.types';
+import type { Resolver } from 'react-hook-form';
 
 interface AccountFormProps {
   account?: Account | null;
@@ -17,7 +17,11 @@ interface AccountFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createAccountSchema> | yup.InferType<typeof updateAccountSchema>;
+type AccountFormData = {
+  name?: string;
+  type?: AccountType | string;
+  initialBalance?: number;
+};
 
 function AccountForm({ account, onSubmit, onCancel, isLoading = false }: AccountFormProps) {
   const isEditMode = !!account;
@@ -27,8 +31,8 @@ function AccountForm({ account, onSubmit, onCancel, isLoading = false }: Account
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<AccountFormData>({
+    resolver: yupResolver(schema) as Resolver<AccountFormData>,
     defaultValues: account
       ? {
           name: account.name,
@@ -43,23 +47,24 @@ function AccountForm({ account, onSubmit, onCancel, isLoading = false }: Account
     mode: 'onChange',
   });
 
-  const handleFormSubmit = async (data: FormData) => {
-    // Convertir initialBalance a número si existe
+  const handleFormSubmit = async (data: AccountFormData) => {
+    // Convertir initialBalance a número si existe y type a AccountType
     const submitData: CreateAccountDto | UpdateAccountDto = {
-      ...data,
-      initialBalance:
-        data.initialBalance !== undefined
-          ? typeof data.initialBalance === 'string'
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.type !== undefined && { type: data.type as AccountType }),
+      ...(data.initialBalance !== undefined && {
+        initialBalance:
+          typeof data.initialBalance === 'string'
             ? Number(data.initialBalance)
-            : data.initialBalance
-          : undefined,
+            : data.initialBalance,
+      }),
     };
     await onSubmit(submitData);
   };
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormInput<FormData>
+      <FormInput<AccountFormData>
         name="name"
         control={control}
         label="Nombre de la cuenta"
@@ -68,7 +73,7 @@ function AccountForm({ account, onSubmit, onCancel, isLoading = false }: Account
         errorMessage={errors.name?.message}
       />
 
-      <FormSelect<FormData>
+      <FormSelect<AccountFormData>
         name="type"
         control={control}
         label="Tipo de cuenta"
@@ -78,7 +83,7 @@ function AccountForm({ account, onSubmit, onCancel, isLoading = false }: Account
         errorMessage={errors.type?.message}
       />
 
-      <FormInput<FormData>
+      <FormInput<AccountFormData>
         name="initialBalance"
         control={control}
         label="Balance inicial"

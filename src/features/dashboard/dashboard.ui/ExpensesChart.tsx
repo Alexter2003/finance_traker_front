@@ -50,8 +50,8 @@ function ExpensesChart({ budgets, loading = false }: ExpensesChartProps) {
         style: {
           color: '#e5e7eb',
         },
-        formatter: function () {
-          const point = this.point || (this as any).points?.[0];
+        formatter: function (this: any) {
+          const point = this.point;
           if (!point) return '';
           const percentage = point.percentage || 0;
           return `

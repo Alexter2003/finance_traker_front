@@ -19,7 +19,7 @@ import type {
 import type { TransactionWithRelations } from '../transactions.domain/transactions.types';
 import { accountsService } from '../../accounts/accounts.data/accounts.service';
 import type { Account } from '../../../shared/types/common.types';
-import * as yup from 'yup';
+import type { Resolver } from 'react-hook-form';
 
 interface TransactionFormProps {
   transaction?: TransactionWithRelations | null;
@@ -28,7 +28,13 @@ interface TransactionFormProps {
   isLoading?: boolean;
 }
 
-type FormData = yup.InferType<typeof createTransactionSchema> | yup.InferType<typeof updateTransactionSchema>;
+type TransactionFormData = {
+  fromAccountId?: number;
+  toAccountId?: number;
+  amount?: number;
+  description?: string;
+  date?: string;
+};
 
 function TransactionForm({
   transaction,
@@ -47,8 +53,8 @@ function TransactionForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(schema),
+  } = useForm<TransactionFormData>({
+    resolver: yupResolver(schema) as Resolver<TransactionFormData>,
     defaultValues: transaction
       ? {
           fromAccountId: Number(transaction.fromAccountId),
@@ -86,7 +92,7 @@ function TransactionForm({
     fetchAccounts();
   }, []);
 
-  const handleFormSubmit = async (data: FormData) => {
+  const handleFormSubmit = async (data: TransactionFormData) => {
     const submitData: CreateTransactionDto | UpdateTransactionDto = {
       ...data,
       fromAccountId:
@@ -127,7 +133,7 @@ function TransactionForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <FormSelect<FormData>
+      <FormSelect<TransactionFormData>
         name="fromAccountId"
         control={control}
         label="Cuenta de origen"
@@ -141,7 +147,7 @@ function TransactionForm({
         description="Cuenta desde la cual se transferirá el dinero"
       />
 
-      <FormSelect<FormData>
+      <FormSelect<TransactionFormData>
         name="toAccountId"
         control={control}
         label="Cuenta de destino"
@@ -155,7 +161,7 @@ function TransactionForm({
         description="Cuenta hacia la cual se transferirá el dinero"
       />
 
-      <FormInput<FormData>
+      <FormInput<TransactionFormData>
         name="amount"
         control={control}
         label="Monto"
@@ -168,7 +174,7 @@ function TransactionForm({
         description="Monto a transferir en quetzales"
       />
 
-      <FormTextarea<FormData>
+      <FormTextarea<TransactionFormData>
         name="description"
         control={control}
         label="Descripción"
@@ -177,7 +183,7 @@ function TransactionForm({
         errorMessage={errors.description?.message}
       />
 
-      <FormDatePicker<FormData>
+      <FormDatePicker<TransactionFormData>
         name="date"
         control={control}
         label="Fecha de la transacción"
