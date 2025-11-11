@@ -10,7 +10,7 @@ function Header({ className = '' }: HeaderProps) {
       <div className="flex items-center h-16">
         <Link to="/" className="flex items-center">
           <h1 className="text-xl font-bold text-white dark:text-white pl-4">
-            Finance Tracker v1
+            Finance Tracker v2
           </h1>
         </Link>
       </div>
